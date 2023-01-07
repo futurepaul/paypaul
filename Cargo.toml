@@ -7,5 +7,9 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.68"
+axum = "0.6.1"
 bdk = { version = "0.26.0", features = ["sqlite"] }
 dotenv = "0.15.0"
+serde = { version = "1.0.152", features = ["derive"] }
+serde_json = "1.0.91"
+tokio = { version = "1.24.1", features = ["full"] }
