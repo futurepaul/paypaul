@@ -4,7 +4,13 @@ use std::{
     sync::{Arc, RwLock},
 };
 
-use axum::{extract::State, response::IntoResponse, routing::get, Json, Router};
+use axum::{
+    extract::State,
+    http::StatusCode,
+    response::{IntoResponse, Response},
+    routing::get,
+    Json, Router,
+};
 use bdk::{bitcoin::Network, database::SqliteDatabase, wallet::AddressIndex, Wallet};
 use serde::Serialize;
 
@@ -70,13 +76,41 @@ async fn hello_handler() -> &'static str {
     "hello!"
 }
 
-async fn new_address_handler(State(state): State<SharedState>) -> impl IntoResponse {
+#[axum::debug_handler]
+async fn new_address_handler(
+    State(state): State<SharedState>,
+) -> Result<impl IntoResponse, AppError> {
     let wallet = &state.read().unwrap().wallet;
-    let address = wallet.get_address(AddressIndex::New).unwrap();
+    let address = wallet.get_address(AddressIndex::New)?;
     let address_response = AddressResponse {
         address: address.address.to_string(),
         index: address.index,
     };
 
-    Json(address_response)
+    Ok(Json(address_response))
+}
+
+// Make our own error that wraps `anyhow::Error`.
+struct AppError(anyhow::Error);
+
+// Tell axum how to convert `AppError` into a response.
+impl IntoResponse for AppError {
+    fn into_response(self) -> Response {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            format!("Something went wrong: {}", self.0),
+        )
+            .into_response()
+    }
+}
+
+// This enables using `?` on functions that return `Result<_, anyhow::Error>` to turn them into
+// `Result<_, AppError>`. That way you don't need to do that manually.
+impl<E> From<E> for AppError
+where
+    E: Into<anyhow::Error>,
+{
+    fn from(err: E) -> Self {
+        Self(err.into())
+    }
 }

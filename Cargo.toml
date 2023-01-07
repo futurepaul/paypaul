@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.68"
-axum = "0.6.1"
+axum = { version = "0.6.1", features = ["macros"] }
 bdk = { version = "0.26.0", features = ["sqlite"] }
 dotenv = "0.15.0"
 serde = { version = "1.0.152", features = ["derive"] }
