@@ -29,14 +29,14 @@ unsafe impl Send for AppState {}
 unsafe impl Sync for AppState {}
 
 impl AppState {
-    fn new(descriptor: String, network: String) -> anyhow::Result<Self> {
+    fn new(descriptor: String, network: String, db_path: String) -> anyhow::Result<Self> {
         let parsed_network = network.parse::<Network>()?;
         // Set up bdk
         let wallet = Wallet::new(
             &descriptor,
             None,
             parsed_network,
-            SqliteDatabase::new("./paypaul.db"),
+            SqliteDatabase::new(db_path),
         )?;
 
         Ok(AppState { wallet })
@@ -54,8 +54,9 @@ async fn main() -> anyhow::Result<()> {
 
     let descriptor = env::var("WALLET_DESCRIPTOR")?;
     let network = env::var("NETWORK")?;
+    let db_path = env::var("DB_PATH")?;
 
-    let state = AppState::new(descriptor, network)?;
+    let state = AppState::new(descriptor, network, db_path)?;
 
     let shared_state: SharedState = Arc::new(RwLock::new(state));
 
