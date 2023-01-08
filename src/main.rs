@@ -6,13 +6,14 @@ use std::{
 
 use axum::{
     extract::State,
-    http::StatusCode,
+    http::{self, Method, StatusCode},
     response::{IntoResponse, Response},
     routing::get,
     Json, Router,
 };
 use bdk::{bitcoin::Network, database::SqliteDatabase, wallet::AddressIndex, Wallet};
 use serde::Serialize;
+use tower_http::cors::{Any, CorsLayer};
 
 #[derive(Serialize)]
 struct AddressResponse {
@@ -64,9 +65,15 @@ async fn main() -> anyhow::Result<()> {
     let app = Router::new()
         .route("/hello", get(hello_handler))
         .route("/address", get(new_address_handler))
-        .with_state(shared_state);
+        .with_state(shared_state)
+        .layer(
+            CorsLayer::new()
+                .allow_origin(Any)
+                .allow_headers(vec![http::header::CONTENT_TYPE])
+                .allow_methods([Method::GET, Method::POST]),
+        );
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    let addr = SocketAddr::from(([127, 0, 0, 1], 3001));
     println!("listening on {}", addr);
     axum::Server::bind(&addr)
         .serve(app.into_make_service())
