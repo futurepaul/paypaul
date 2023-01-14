@@ -1,4 +1,4 @@
-lockfileVersion: 5.4
+lockfileVersion: 5.3
 
 specifiers:
   autoprefixer: ^10.4.13
@@ -12,12 +12,12 @@ specifiers:
 
 dependencies:
   solid-js: 1.6.8
-  solid-qr-code: 0.0.8_solid-js@1.6.8
+  solid-qr-code: 0.0.8
 
 devDependencies:
   autoprefixer: 10.4.13_postcss@8.4.21
   postcss: 8.4.21
-  tailwindcss: 3.2.4_postcss@8.4.21
+  tailwindcss: 3.2.4
   typescript: 4.9.4
   vite: 4.0.4
   vite-plugin-solid: 2.5.0_solid-js@1.6.8+vite@4.0.4
@@ -761,6 +761,7 @@ packages:
 
   /csstype/3.1.1:
     resolution: {integrity: sha512-DJR/VvkAvSZW9bTouZue2sSxDwdTN92uHjqeKVm+0dAqdfNykRzQ95tay8aXMBAAPpUiq4Qcug2L7neoRh2Egw==}
+    dev: false
 
   /debug/4.3.4:
     resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
@@ -1186,12 +1187,11 @@ packages:
     resolution: {integrity: sha512-+X5rf4bL3Il/LI2pn6O2d63D/KyG8Shxj3DM6violSPOhRgm5ln37Pq6uVDAvJcmsObOBeGOjXAwZvqwyZjisg==}
     dependencies:
       csstype: 3.1.1
+    dev: false
 
-  /solid-qr-code/0.0.8_solid-js@1.6.8:
+  /solid-qr-code/0.0.8:
     resolution: {integrity: sha512-K7LC3IKvyRag6WW7/ijJl32pBmoC3EzZ7AuydyaAVKSmlwukJmqvrFkrxaA1bOWabYJhzP9qwLbjDVlCUP2BwQ==}
     engines: {node: '>=10', yarn: '>=1.22.5'}
-    peerDependencies:
-      solid-js: ^1.4.8
     dependencies:
       qr.js: 0.0.0
       solid-js: 1.6.8
@@ -1225,12 +1225,10 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
-  /tailwindcss/3.2.4_postcss@8.4.21:
+  /tailwindcss/3.2.4:
     resolution: {integrity: sha512-AhwtHCKMtR71JgeYDaswmZXhPcW9iuI9Sp2LvZPo9upDZ7231ZJ7eA9RaURbhpXGVlrjX4cFNlB4ieTetEb7hQ==}
     engines: {node: '>=12.13.0'}
     hasBin: true
-    peerDependencies:
-      postcss: ^8.0.9
     dependencies:
       arg: 5.0.2
       chokidar: 3.5.3

@@ -13,4 +13,6 @@ dotenv = "0.15.0"
 serde = { version = "1.0.152", features = ["derive"] }
 serde_json = "1.0.91"
 tokio = { version = "1.24.1", features = ["full"] }
+tonic_lnd = "0.5.0"
+# tonic_lnd = { path = "../other-peoples-code/tonic_lnd"}
 tower-http = { version = "0.3.5", features = ["cors"] }
