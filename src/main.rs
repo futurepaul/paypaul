@@ -18,6 +18,7 @@ use bdk::{
     Wallet,
 };
 use serde::Serialize;
+use tonic_lnd::LightningClient;
 use tower_http::cors::{Any, CorsLayer};
 
 use crate::bip21::create_bip_21;
@@ -34,7 +35,7 @@ struct AddressResponse {
 
 struct AppState {
     wallet: Wallet<SqliteDatabase>,
-    lnd_client: Arc<tokio::sync::Mutex<tonic_lnd::Client>>,
+    lnd_client: LightningClient,
 }
 
 // lololol
@@ -46,7 +47,7 @@ impl AppState {
         descriptor: String,
         network: String,
         db_path: String,
-        lnd_client: tonic_lnd::Client,
+        lnd_client: LightningClient,
     ) -> anyhow::Result<Self> {
         let parsed_network = network.parse::<Network>()?;
         // Set up bdk
@@ -57,10 +58,7 @@ impl AppState {
             SqliteDatabase::new(db_path),
         )?;
 
-        Ok(AppState {
-            wallet,
-            lnd_client: Arc::new(tokio::sync::Mutex::new(lnd_client)),
-        })
+        Ok(AppState { wallet, lnd_client })
     }
 }
 
@@ -84,9 +82,11 @@ async fn main() -> anyhow::Result<()> {
     let mac_path = env::var("LND_MACAROON_PATH")?;
     let tls_path = env::var("LND_TLS_CERT_PATH")?;
 
-    let client = tonic_lnd::connect(lnd_address, tls_path, mac_path)
+    let client = tonic_lnd::connect(lnd_address, 10009, tls_path, mac_path)
         .await
-        .expect("failed to connect");
+        .expect("failed to connect")
+        .lightning()
+        .clone();
 
     let state = AppState::new(descriptor, network, db_path, client)?;
 
@@ -133,11 +133,9 @@ async fn new_address_handler(
     // Lightning
     // Hard thing is to use this mutable "Client" thing without Rust getting mad
     // Can't use these on the same line because Rust \o/
-    let client = &state.read().unwrap().lnd_client.clone();
-    let mut client = client.lock().await;
+    let mut client = state.read().unwrap().lnd_client.clone();
 
     let bolt11 = client
-        .lightning()
         .add_invoice(tonic_lnd::lnrpc::Invoice {
             value: 1000,
             ..tonic_lnd::lnrpc::Invoice::default()
